@@ -3,7 +3,6 @@ package br.pedroso.remotemediatortest.paging
 import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.cookpad.android.coreandroid.paging.PagedCacheSnapshot
 
 class CachePagingSource<KeyType : Any, Item : Any>(
     private val dataSnapshot: PagedCacheSnapshot<KeyType, Item>,

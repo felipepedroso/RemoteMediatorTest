@@ -7,7 +7,7 @@ import br.pedroso.remotemediatortest.api.ItemsApi
 import br.pedroso.remotemediatortest.entity.Item
 import br.pedroso.remotemediatortest.paging.CachePagingSource
 import br.pedroso.remotemediatortest.paging.CachedRemoteMediator
-import com.cookpad.android.coreandroid.paging.PagedCache
+import br.pedroso.remotemediatortest.paging.PagedCache
 
 class ItemsRepository(
     private val itemsApi: ItemsApi,

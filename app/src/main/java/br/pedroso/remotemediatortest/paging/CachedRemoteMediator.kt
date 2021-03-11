@@ -7,8 +7,6 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import br.pedroso.remotemediatortest.entity.Item
 import br.pedroso.remotemediatortest.entity.Page
-import com.cookpad.android.coreandroid.paging.PageKey
-import com.cookpad.android.coreandroid.paging.PagedCache
 
 @SuppressWarnings("TooManyFunctions")
 @OptIn(ExperimentalPagingApi::class)

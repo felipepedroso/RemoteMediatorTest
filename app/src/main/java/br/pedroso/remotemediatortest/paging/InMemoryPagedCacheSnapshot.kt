@@ -1,4 +1,4 @@
-package com.cookpad.android.coreandroid.paging
+package br.pedroso.remotemediatortest.paging
 
 import android.util.Log
 import androidx.annotation.AnyThread

@@ -1,4 +1,4 @@
-package com.cookpad.android.coreandroid.paging
+package br.pedroso.remotemediatortest.paging
 
 data class PageKey<KeyType>(
     val value: KeyType,

@@ -1,4 +1,4 @@
-package com.cookpad.android.coreandroid.paging
+package br.pedroso.remotemediatortest.paging
 
 class InMemoryPagedCache<Key, Item, ItemId>(
     val getItemId: Item.() -> ItemId

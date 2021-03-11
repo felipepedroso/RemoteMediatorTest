@@ -1,4 +1,4 @@
-package com.cookpad.android.coreandroid.paging
+package br.pedroso.remotemediatortest.paging
 
 @SuppressWarnings("TooManyFunctions")
 interface PagedCache<KeyType, Item, ItemId> {
