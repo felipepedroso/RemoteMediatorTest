@@ -17,7 +17,7 @@ class ItemsApi {
         return Page(
             currentPage = pageNumber,
             nextPage = pageNumber + 1,
-            previousPage = if (pageNumber > 1) null else pageNumber - 1,
+            previousPage = if (pageNumber > 1) pageNumber - 1 else null,
             items = (1..10).map { count ->
                 val id = count + ((pageNumber - 1) * 10)
                 Item(
