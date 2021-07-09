@@ -4,8 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import br.pedroso.remotemediatortest.api.ItemsApi
 import br.pedroso.remotemediatortest.entity.Item
+import br.pedroso.remotemediatortest.paging.PagesCache
+import br.pedroso.remotemediatortest.repository.ItemsPageFetcher
 import br.pedroso.remotemediatortest.repository.ItemsRepository
-import br.pedroso.remotemediatortest.paging.InMemoryPagedCache
 
 @Suppress("UNCHECKED_CAST")
 class MainActivityViewModelFactory : ViewModelProvider.Factory {
@@ -13,8 +14,8 @@ class MainActivityViewModelFactory : ViewModelProvider.Factory {
         return when (modelClass) {
             MainActivityViewModel::class.java -> MainActivityViewModel(
                 itemsRepository = ItemsRepository(
-                    itemsApi = ItemsApi(),
-                    pagedCache = InMemoryPagedCache(Item::id)
+                    itemsPageFetcher = ItemsPageFetcher(ItemsApi()),
+                    pagedCache = PagesCache(Item::id)
                 )
             )
             else -> throw IllegalStateException("Invalid view model type.")

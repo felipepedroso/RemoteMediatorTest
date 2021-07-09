@@ -1,6 +1,6 @@
 package br.pedroso.remotemediatortest.entity
 
-data class Page(
+data class ApiPage(
     val currentPage: Int,
     val nextPage: Int?,
     val previousPage: Int?,

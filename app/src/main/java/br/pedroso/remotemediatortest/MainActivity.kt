@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import br.pedroso.remotemediatortest.adapters.ItemsAdapter
 import br.pedroso.remotemediatortest.adapters.ItemsLoadStateAdapter
 import br.pedroso.remotemediatortest.databinding.ActivityMainBinding
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun observePagingFlow() {
         lifecycleScope.launch {
-            viewModel.pagingDataFlow.collect { pagingData ->
+            viewModel.pagingDataFlow.collectLatest { pagingData ->
                 itemsAdapter.submitData(pagingData)
             }
         }

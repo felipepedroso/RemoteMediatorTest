@@ -1,12 +1,12 @@
 package br.pedroso.remotemediatortest.api
 
 import br.pedroso.remotemediatortest.entity.Item
-import br.pedroso.remotemediatortest.entity.Page
+import br.pedroso.remotemediatortest.entity.ApiPage
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
 class ItemsApi {
-    suspend fun getItemsPage(pageNumber: Int): Page {
+    suspend fun getItemsPage(pageNumber: Int): ApiPage {
         delay(DELAY)
         if (pageNumber < 1) error("API doesn't accept pageNumbers smaller than 1.")
 
@@ -14,7 +14,7 @@ class ItemsApi {
             error("Simulating a random API error.")
         }
 
-        return Page(
+        return ApiPage(
             currentPage = pageNumber,
             nextPage = pageNumber + 1,
             previousPage = if (pageNumber > 1) pageNumber - 1 else null,
