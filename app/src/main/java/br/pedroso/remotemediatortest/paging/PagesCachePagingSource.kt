@@ -11,7 +11,10 @@ class PagesCachePagingSource<PageKeyType : Any, ItemType : Any>(
 ) : PagingSource<PageKeyType, ItemType>() {
 
     override fun getRefreshKey(state: PagingState<PageKeyType, ItemType>): PageKeyType? =
-        startingPageKey
+        state.anchorPosition?.let { anchorPosition ->
+            state.closestPageToPosition(anchorPosition)?.prevKey
+                ?: state.closestPageToPosition(anchorPosition)?.nextKey
+        }
 
     override suspend fun load(params: LoadParams<PageKeyType>): LoadResult<PageKeyType, ItemType> {
         return try {
