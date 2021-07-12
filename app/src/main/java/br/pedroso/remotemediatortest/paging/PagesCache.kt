@@ -1,9 +1,11 @@
 package br.pedroso.remotemediatortest.paging
 
+import androidx.paging.InvalidatingPagingSourceFactory
 import java.util.concurrent.atomic.AtomicBoolean
 
-class PagesCache<PageKeyType, ItemType, ItemIdType>(
+class PagesCache<PageKeyType : Any, ItemType : Any, ItemIdType>(
     private val itemIdGetter: ItemIdGetter<ItemType, ItemIdType>,
+    private val startingPageKey: PageKeyType,
 ) {
 
     private val cache = HashMap<PageKeyType, LinkedHashMap<ItemIdType, ItemType>>()
@@ -11,8 +13,6 @@ class PagesCache<PageKeyType, ItemType, ItemIdType>(
     private val itemPageKeys = HashMap<ItemIdType, PageKey<PageKeyType>>()
 
     private val pageKeysIndex = HashMap<PageKeyType, PageKey<PageKeyType>>()
-
-    private val snapshots = mutableListOf<PagesCacheSnapshot<PageKeyType, ItemType>>()
 
     private fun getPage(pageKey: PageKeyType): HashMap<ItemIdType, ItemType> {
         return cache.getOrPut(pageKey) { linkedMapOf() }
@@ -32,14 +32,16 @@ class PagesCache<PageKeyType, ItemType, ItemIdType>(
         return pageKeysIndex.getOrPut(keyValue) { PageKey(keyValue) }
     }
 
-    fun createSnapshot(): PagesCacheSnapshot<PageKeyType, ItemType> {
+    val pagingSourceFactory = InvalidatingPagingSourceFactory(::createPagingSource)
+
+    private fun createPagingSource(): PagesCachePagingSource<PageKeyType, ItemType> {
         val dataSnapshot: Map<PageKeyType, List<ItemType>> = cache.map { (key, value) ->
             key to value.values.toList()
         }.toMap()
 
-        return PagesCacheSnapshot(dataSnapshot, HashMap(pageKeysIndex)).also { snapshot ->
-            snapshots.add(snapshot)
-        }
+        val pageKeysIndex = HashMap(pageKeysIndex)
+
+        return PagesCachePagingSource(dataSnapshot, pageKeysIndex, startingPageKey)
     }
 
     inner class Transaction constructor(block: Transaction.() -> Unit) {
@@ -48,13 +50,8 @@ class PagesCache<PageKeyType, ItemType, ItemIdType>(
         init {
             block(this)
             if (pendingInvalidation.compareAndSet(true, false)) {
-                invalidateSnapshots()
+                pagingSourceFactory.invalidate()
             }
-        }
-
-        private fun invalidateSnapshots() {
-            snapshots.forEach { it.invalidate() }
-            snapshots.clear()
         }
 
         fun insert(item: ItemType, pageKey: PageKey<PageKeyType>) {
@@ -77,6 +74,7 @@ class PagesCache<PageKeyType, ItemType, ItemIdType>(
                 val page = getPage(pageKey.value)
                 page[itemId] = newItem
             }
+            pendingInvalidation.set(true)
         }
 
         fun delete(item: ItemType) {
@@ -88,6 +86,7 @@ class PagesCache<PageKeyType, ItemType, ItemIdType>(
                 page.remove(itemId)
                 itemPageKeys.remove(itemId)
             }
+            pendingInvalidation.set(true)
         }
 
         fun clear() {

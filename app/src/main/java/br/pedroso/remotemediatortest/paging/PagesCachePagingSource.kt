@@ -4,30 +4,18 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 
 class PagesCachePagingSource<PageKeyType : Any, ItemType : Any>(
-    private val dataSnapshot: PagesCacheSnapshot<PageKeyType, ItemType>,
+    private val cache: Map<PageKeyType, List<ItemType>>,
+    private val pageKeysIndex: HashMap<PageKeyType, PageKey<PageKeyType>>,
     private val startingPageKey: PageKeyType,
 ) : PagingSource<PageKeyType, ItemType>() {
-    init {
-        dataSnapshot.addInvalidationListener(::invalidate)
-
-        registerInvalidatedCallback {
-            dataSnapshot.removeInvalidationListener(::invalidate)
-            dataSnapshot.invalidate()
-        }
-
-        if (!invalid && dataSnapshot.isInvalid) {
-            invalidate()
-        }
-    }
 
     override fun getRefreshKey(state: PagingState<PageKeyType, ItemType>): PageKeyType? =
         startingPageKey
 
     override suspend fun load(params: LoadParams<PageKeyType>): LoadResult<PageKeyType, ItemType> {
-        val pageKey = dataSnapshot.getPageKey(params.key ?: startingPageKey)
-
         return try {
-            val items = dataSnapshot.getItems(pageKey.value)
+            val pageKey = pageKeysIndex.getValue(params.key ?: startingPageKey)
+            val items = cache.getValue(pageKey.value)
 
             LoadResult.Page(
                 data = items,

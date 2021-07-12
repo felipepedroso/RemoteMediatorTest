@@ -7,12 +7,12 @@ import kotlin.random.Random
 
 class ItemsApi {
     suspend fun getItemsPage(pageNumber: Int): ApiPage {
-        delay(DELAY)
-        if (pageNumber < 1) error("API doesn't accept pageNumbers smaller than 1.")
+//        delay(DELAY)
+//        if (pageNumber < 1) error("API doesn't accept pageNumbers smaller than 1.")
 
-        if (Random.nextInt(100) > 90) {
-            error("Simulating a random API error.")
-        }
+//        if (Random.nextInt(100) > 90) {
+//            error("Simulating a random API error.")
+//        }
 
         return ApiPage(
             currentPage = pageNumber,
@@ -29,6 +29,6 @@ class ItemsApi {
     }
 
     companion object {
-        private const val DELAY = 500L
+        private const val DELAY = 0L
     }
 }

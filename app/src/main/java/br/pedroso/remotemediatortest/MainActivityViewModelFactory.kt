@@ -15,7 +15,7 @@ class MainActivityViewModelFactory : ViewModelProvider.Factory {
             MainActivityViewModel::class.java -> MainActivityViewModel(
                 itemsRepository = ItemsRepository(
                     itemsPageFetcher = ItemsPageFetcher(ItemsApi()),
-                    pagedCache = PagesCache(Item::id)
+                    pagedCache = PagesCache(Item::id, 1)
                 )
             )
             else -> throw IllegalStateException("Invalid view model type.")

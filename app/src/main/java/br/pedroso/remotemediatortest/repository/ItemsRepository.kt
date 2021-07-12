@@ -5,7 +5,6 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import br.pedroso.remotemediatortest.entity.Item
 import br.pedroso.remotemediatortest.paging.PagesCache
-import br.pedroso.remotemediatortest.paging.PagesCachePagingSource
 import br.pedroso.remotemediatortest.paging.PagesCacheRemoteMediator
 
 class ItemsRepository(
@@ -23,7 +22,7 @@ class ItemsRepository(
             pageFetcher = itemsPageFetcher,
             itemIdGetter = Item::id
         ),
-        pagingSourceFactory = { PagesCachePagingSource(pagedCache.createSnapshot(), STARTING_PAGE) }
+        pagingSourceFactory = pagedCache.pagingSourceFactory
     )
 
     companion object {

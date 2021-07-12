@@ -1,5 +1,6 @@
 package br.pedroso.remotemediatortest.paging
 
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
@@ -32,21 +33,21 @@ class PagesCacheRemoteMediator<PageKeyType : Any, ItemType : Any, ItemIdType>(
         return try {
             val page = pageFetcher.fetchPage(pageKeyValue)
 
-            if (loadType == LoadType.REFRESH || page.items.isNotEmpty()) {
-                pagesCache.Transaction {
-                    if (loadType == LoadType.REFRESH) {
-                        clear()
-                    }
+            pagesCache.Transaction {
+                if (loadType == LoadType.REFRESH) {
+                    clear()
+                }
 
-                    if (page.items.isNotEmpty()) {
-                        insert(page.items, page.key)
-                    }
+                if (page.items.isNotEmpty()) {
+                    insert(page.items, page.key)
                 }
             }
 
             MediatorResult.Success(endOfPaginationReached = page.items.isEmpty())
         } catch (error: Throwable) {
             MediatorResult.Error(error)
+        }.also { result ->
+            Log.d("LogTest", "Result: $result")
         }
     }
 }
