@@ -2,6 +2,7 @@ package br.pedroso.remotemediatortest.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import br.pedroso.remotemediatortest.debugLog
 
 class PagesCachePagingSource<PageKeyType : Any, ItemType : Any>(
     private val cache: Map<PageKeyType, List<ItemType>>,
@@ -19,11 +20,29 @@ class PagesCachePagingSource<PageKeyType : Any, ItemType : Any>(
 
             LoadResult.Page(
                 data = items,
-                if (items.isEmpty() && params is LoadParams.Prepend) null else pageKey.previousPageKey,
-                if (items.isEmpty() && params is LoadParams.Append) null else pageKey.nextPageKey
+                pageKeysIndex[pageKey.previousPageKey]?.value,
+                pageKeysIndex[pageKey.nextPageKey]?.value
             )
+
         } catch (error: Throwable) {
             LoadResult.Error(error)
+        }.also { result ->
+            debugLog("--------")
+            debugLog("Paging source params: $params")
+            debugLog("Paging source params key: ${params.key}")
+            debugLog("Paging source params loadSize: ${params.loadSize}")
+            debugLog("Paging source params placeholderEnabled: ${params.placeholdersEnabled}")
+            debugLog("Paging source result: $result")
+
+            if (result is LoadResult.Page) {
+                debugLog("Paging source page data: ${result.data}")
+                debugLog("Paging source page prevKey: ${result.prevKey}")
+                debugLog("Paging source page nextKey: ${result.nextKey}")
+                debugLog("Paging source page itemsBefore: ${result.itemsBefore}")
+                debugLog("Paging source page itemsAfter: ${result.itemsAfter}")
+            } else if (result is LoadResult.Error) {
+                debugLog("Paging source error: ${result.throwable}")
+            }
         }
     }
 }

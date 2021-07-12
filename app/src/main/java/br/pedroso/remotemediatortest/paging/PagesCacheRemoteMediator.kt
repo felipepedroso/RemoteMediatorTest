@@ -1,10 +1,10 @@
 package br.pedroso.remotemediatortest.paging
 
-import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
+import br.pedroso.remotemediatortest.debugLog
 
 @SuppressWarnings("TooManyFunctions")
 @OptIn(ExperimentalPagingApi::class)
@@ -47,7 +47,17 @@ class PagesCacheRemoteMediator<PageKeyType : Any, ItemType : Any, ItemIdType>(
         } catch (error: Throwable) {
             MediatorResult.Error(error)
         }.also { result ->
-            Log.d("LogTest", "Result: $result")
+            debugLog("--------")
+            debugLog("Mediator request load type: $loadType")
+            debugLog("Mediator request state: $state")
+            debugLog("Mediator request result: $result")
+
+            if (result is MediatorResult.Success) {
+                debugLog("Successful Mediator result, endOfPaginationReached=${result.endOfPaginationReached}")
+            } else if(result is MediatorResult.Error) {
+                debugLog("Madiator failed with: ${result.throwable}")
+            }
+
         }
     }
 }
