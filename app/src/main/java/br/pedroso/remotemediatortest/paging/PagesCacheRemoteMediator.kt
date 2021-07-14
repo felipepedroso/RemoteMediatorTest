@@ -22,12 +22,10 @@ class PagesCacheRemoteMediator<PageKeyType : Any, ItemType : Any, ItemIdType>(
         val pageKeyValue = when (loadType) {
             LoadType.REFRESH -> startingPageKey
             LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
-            LoadType.APPEND -> {
-                state.lastItemOrNull()
-                    ?.let { lastItem -> itemIdGetter.getItemId(lastItem) }
-                    ?.let { itemId -> pagesCache.getPageKeyForItemId(itemId)?.nextPageKey }
-                    ?: return MediatorResult.Success(endOfPaginationReached = true)
-            }
+            LoadType.APPEND -> state.lastItemOrNull()
+                ?.let { lastItem -> itemIdGetter.getItemId(lastItem) }
+                ?.let { itemId -> pagesCache.getPageKeyForItemId(itemId)?.nextPageKey }
+                ?: return MediatorResult.Success(endOfPaginationReached = true)
         }
 
         return try {
@@ -54,7 +52,7 @@ class PagesCacheRemoteMediator<PageKeyType : Any, ItemType : Any, ItemIdType>(
 
             if (result is MediatorResult.Success) {
                 debugLog("Successful Mediator result, endOfPaginationReached=${result.endOfPaginationReached}")
-            } else if(result is MediatorResult.Error) {
+            } else if (result is MediatorResult.Error) {
                 debugLog("Madiator failed with: ${result.throwable}")
             }
 

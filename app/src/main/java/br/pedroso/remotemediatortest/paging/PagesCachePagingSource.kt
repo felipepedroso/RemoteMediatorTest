@@ -14,11 +14,11 @@ class PagesCachePagingSource<PageKeyType : Any, ItemType : Any>(
         state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey
                 ?: state.closestPageToPosition(anchorPosition)?.nextKey
-        }
+        } ?: startingPageKey
 
     override suspend fun load(params: LoadParams<PageKeyType>): LoadResult<PageKeyType, ItemType> {
         return try {
-            val pageKey = pageKeysIndex.getValue(params.key ?: startingPageKey)
+            val pageKey = pageKeysIndex[params.key] ?: pageKeysIndex.getValue(startingPageKey)
             val items = cache.getValue(pageKey.value)
 
             LoadResult.Page(
