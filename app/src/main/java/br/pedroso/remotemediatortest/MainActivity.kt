@@ -18,7 +18,9 @@ class MainActivity : AppCompatActivity() {
         ActivityMainBinding.inflate(layoutInflater)
     }
 
-    private val itemsAdapter = ItemsAdapter()
+    private val itemsAdapter = ItemsAdapter { item ->
+        viewModel.removeItem(item)
+    }
 
     private val viewModel: MainActivityViewModel by viewModels {
         MainActivityViewModelFactory()

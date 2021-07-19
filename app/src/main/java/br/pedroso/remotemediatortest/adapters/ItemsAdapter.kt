@@ -5,13 +5,15 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import br.pedroso.remotemediatortest.entity.Item
 
-class ItemsAdapter : PagingDataAdapter<Item, ItemViewHolder>(DIFF_CALLBACK) {
+class ItemsAdapter(
+    private val removeItemCallback: (Item) -> Unit
+) : PagingDataAdapter<Item, ItemViewHolder>(DIFF_CALLBACK) {
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         getItem(position)?.let { item -> holder.bind(item) }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder =
-        ItemViewHolder.create(parent)
+        ItemViewHolder.create(parent, removeItemCallback)
 
     companion object {
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Item>() {

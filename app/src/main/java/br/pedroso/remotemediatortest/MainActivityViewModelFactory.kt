@@ -10,13 +10,16 @@ import br.pedroso.remotemediatortest.repository.ItemsRepository
 
 @Suppress("UNCHECKED_CAST")
 class MainActivityViewModelFactory : ViewModelProvider.Factory {
+    private val pagesCache = PagesCache(Item::id, 1)
+
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return when (modelClass) {
             MainActivityViewModel::class.java -> MainActivityViewModel(
                 itemsRepository = ItemsRepository(
                     itemsPageFetcher = ItemsPageFetcher(ItemsApi()),
-                    pagedCache = PagesCache(Item::id, 1)
-                )
+                    pagedCache = pagesCache
+                ),
+                pagesCache = pagesCache
             )
             else -> throw IllegalStateException("Invalid view model type.")
         } as T
