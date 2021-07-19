@@ -14,7 +14,7 @@ class ItemsRepository(
 
     @OptIn(ExperimentalPagingApi::class)
     val itemPager = Pager(
-        config = PagingConfig(pageSize = 20),
+        config = PagingConfig(pageSize = 10),
         initialKey = STARTING_PAGE,
         remoteMediator = PagesCacheRemoteMediator(
             pagesCache = pagedCache,

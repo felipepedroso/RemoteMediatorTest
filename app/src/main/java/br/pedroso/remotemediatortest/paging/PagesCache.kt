@@ -1,6 +1,6 @@
 package br.pedroso.remotemediatortest.paging
 
-import androidx.paging.InvalidatingPagingSourceFactory
+import br.pedroso.remotemediatortest.debugLog
 import java.util.concurrent.atomic.AtomicBoolean
 
 class PagesCache<PageKeyType : Any, ItemType : Any, ItemIdType>(
@@ -13,6 +13,10 @@ class PagesCache<PageKeyType : Any, ItemType : Any, ItemIdType>(
     private val itemPageKeys = HashMap<ItemIdType, PageKey<PageKeyType>>()
 
     private val pageKeysIndex = HashMap<PageKeyType, PageKey<PageKeyType>>()
+
+    override fun toString(): String {
+        return "Cache: $cache\nitemPageKeys: $itemPageKeys\npageKeysIndex: $pageKeysIndex"
+    }
 
     private fun getPage(pageKey: PageKeyType): HashMap<ItemIdType, ItemType> {
         return cache.getOrPut(pageKey) { linkedMapOf() }
@@ -55,12 +59,15 @@ class PagesCache<PageKeyType : Any, ItemType : Any, ItemIdType>(
         }
 
         fun insert(item: ItemType, pageKey: PageKey<PageKeyType>) {
+            debugLog("----")
+            debugLog("Before inserting: ${this@PagesCache}")
             val page = getPage(pageKey.value)
             val itemId = itemIdGetter.getItemId(item)
             page[itemId] = item
             itemPageKeys[itemId] = pageKey
             pageKeysIndex[pageKey.value] = pageKey
             pendingInvalidation.set(true)
+            debugLog("After inserting: ${this@PagesCache}")
         }
 
         fun insert(items: List<ItemType>, pageKey: PageKey<PageKeyType>) =
@@ -85,8 +92,8 @@ class PagesCache<PageKeyType : Any, ItemType : Any, ItemIdType>(
                 val page = getPage(pageKey.value)
                 page.remove(itemId)
                 itemPageKeys.remove(itemId)
+                pendingInvalidation.set(true)
             }
-            pendingInvalidation.set(true)
         }
 
         fun clear() {
