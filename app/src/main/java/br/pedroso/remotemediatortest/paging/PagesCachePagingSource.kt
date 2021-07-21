@@ -4,17 +4,20 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import br.pedroso.remotemediatortest.debugLog
 
-class PagesCachePagingSource<PageKeyType : Any, ItemType : Any>(
+class PagesCachePagingSource<PageKeyType : Any, ItemType : Any, ItemIdType>(
     private val cache: Map<PageKeyType, List<ItemType>>,
     private val pageKeysIndex: HashMap<PageKeyType, PageKey<PageKeyType>>,
     private val startingPageKey: PageKeyType,
+    private val itemIdGetter: ItemIdGetter<ItemType, ItemIdType>,
+    private val itemPageKeys: Map<ItemIdType, PageKey<PageKeyType>>
 ) : PagingSource<PageKeyType, ItemType>() {
 
     override fun getRefreshKey(state: PagingState<PageKeyType, ItemType>): PageKeyType? =
         state.anchorPosition?.let { anchorPosition ->
-            state.closestPageToPosition(anchorPosition)?.prevKey
-                ?: state.closestPageToPosition(anchorPosition)?.nextKey
-        } ?: startingPageKey
+            val closestItem = state.closestItemToPosition(anchorPosition) ?: return@let startingPageKey
+            val closestItemId = itemIdGetter.getItemId(closestItem)
+            itemPageKeys[closestItemId]?.value ?: startingPageKey
+        }
 
     override suspend fun load(params: LoadParams<PageKeyType>): LoadResult<PageKeyType, ItemType> {
         return try {

@@ -38,14 +38,20 @@ class PagesCache<PageKeyType : Any, ItemType : Any, ItemIdType>(
 
     val pagingSourceFactory = InvalidatingPagingSourceFactory(::createPagingSource)
 
-    private fun createPagingSource(): PagesCachePagingSource<PageKeyType, ItemType> {
+    private fun createPagingSource(): PagesCachePagingSource<PageKeyType, ItemType, ItemIdType> {
         val dataSnapshot: Map<PageKeyType, List<ItemType>> = cache.map { (key, value) ->
             key to value.values.toList()
         }.toMap()
 
         val pageKeysIndex = HashMap(pageKeysIndex)
 
-        return PagesCachePagingSource(dataSnapshot, pageKeysIndex, startingPageKey)
+        return PagesCachePagingSource(
+            dataSnapshot,
+            pageKeysIndex,
+            startingPageKey,
+            itemIdGetter,
+            HashMap(itemPageKeys)
+        )
     }
 
     inner class Transaction constructor(block: Transaction.() -> Unit) {
@@ -59,15 +65,12 @@ class PagesCache<PageKeyType : Any, ItemType : Any, ItemIdType>(
         }
 
         fun insert(item: ItemType, pageKey: PageKey<PageKeyType>) {
-            debugLog("----")
-            debugLog("Before inserting: ${this@PagesCache}")
             val page = getPage(pageKey.value)
             val itemId = itemIdGetter.getItemId(item)
             page[itemId] = item
             itemPageKeys[itemId] = pageKey
             pageKeysIndex[pageKey.value] = pageKey
             pendingInvalidation.set(true)
-            debugLog("After inserting: ${this@PagesCache}")
         }
 
         fun insert(items: List<ItemType>, pageKey: PageKey<PageKeyType>) =
